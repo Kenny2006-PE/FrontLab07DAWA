@@ -1,8 +1,8 @@
 // src/pages/RegisterPage.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
-import './RegisterPage.css'; // Archivo CSS para personalización
+import './RegisterPage.css';
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
@@ -14,7 +14,18 @@ const RegisterPage = () => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [serverError, setServerError] = useState("");
+  const [formVisible, setFormVisible] = useState(false);
   const navigate = useNavigate();
+
+  // Efecto para animar la aparición del formulario
+  useEffect(() => {
+    // Pequeño retraso para mejorar la experiencia visual
+    const timer = setTimeout(() => {
+      setFormVisible(true);
+    }, 200);
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -22,6 +33,14 @@ const RegisterPage = () => {
       ...formData,
       [name]: value
     });
+    
+    // Limpia el error específico al empezar a escribir
+    if (errors[name]) {
+      setErrors({
+        ...errors,
+        [name]: ""
+      });
+    }
   };
 
   const validateForm = () => {
@@ -39,7 +58,9 @@ const RegisterPage = () => {
       newErrors.password = "La contraseña debe tener al menos 6 caracteres";
     }
 
-    if (formData.password !== formData.confirmPassword) {
+    if (!formData.confirmPassword) {
+      newErrors.confirmPassword = "Debes confirmar la contraseña";
+    } else if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = "Las contraseñas no coinciden";
     }
 
@@ -66,7 +87,10 @@ const RegisterPage = () => {
       );
       
       if (response.data.success) {
-        navigate("/login", { state: { registrationSuccess: true } });
+        // Mostrar animación de éxito antes de navegar
+        setTimeout(() => {
+          navigate("/login", { state: { registrationSuccess: true } });
+        }, 800);
       }
     } catch (err) {
       console.error("Registration error:", err);
@@ -79,98 +103,101 @@ const RegisterPage = () => {
     }
   };
 
+  // Función para cerrar el mensaje de error del servidor
+  const closeServerError = () => {
+    setServerError("");
+  };
+
   return (
     <div className="register-container">
-      <div className="register-card shadow-lg">
-        <div className="register-header text-center mb-4">
-          <h2 className="fw-bold mt-3">Crear Cuenta</h2>
-          <p className="text-muted">Completa el formulario para registrarte</p>
+      <div 
+        className="register-card"
+        style={{ 
+          opacity: formVisible ? 1 : 0, 
+          transform: formVisible ? 'translateY(0)' : 'translateY(20px)',
+          transition: 'opacity 0.5s ease, transform 0.5s ease'
+        }}
+      >
+        <div className="club-badge">
+          <div className="badge-inner">
+            <span className="badge-text">FCB</span>
+          </div>
+        </div>
+        
+        <div className="register-header">
+          <h2>Únete al Club</h2>
+          <p>Regístrate para ser parte de nuestra comunidad culé</p>
         </div>
 
         {serverError && (
-          <div className="alert alert-danger alert-dismissible fade show" role="alert">
-            <i className="bi bi-exclamation-triangle-fill me-2"></i>
-            {serverError}
-            <button 
-              type="button" 
-              className="btn-close" 
-              onClick={() => setServerError("")}
-              aria-label="Close"
-            ></button>
+          <div className="error-message">
+            <i className="bi bi-exclamation-triangle-fill"></i>
+            <span>{serverError}</span>
+            <button onClick={closeServerError} aria-label="Cerrar error">
+              <i className="bi bi-x"></i>
+            </button>
           </div>
         )}
 
         <form onSubmit={handleSubmit} noValidate>
-          <div className="mb-3">
-            <label htmlFor="username" className="form-label">
-              <i className="bi bi-person-fill me-2"></i>
-              Nombre de Usuario
-            </label>
+          <div className="input-group">
+            <i className="bi bi-person-fill input-icon"></i>
             <input
               type="text"
-              className={`form-control ${errors.username ? "is-invalid" : ""}`}
+              className={errors.username ? "error" : ""}
               id="username"
               name="username"
               value={formData.username}
               onChange={handleChange}
-              placeholder="Ingresa tu nombre de usuario"
+              placeholder=" "
               required
             />
+            <label htmlFor="username">Usuario</label>
             {errors.username && (
-              <div className="invalid-feedback">{errors.username}</div>
+              <div className="input-error">{errors.username}</div>
             )}
           </div>
 
-          <div className="mb-3">
-            <label htmlFor="password" className="form-label">
-              <i className="bi bi-lock-fill me-2"></i>
-              Contraseña
-            </label>
+          <div className="input-group">
+            <i className="bi bi-lock-fill input-icon"></i>
             <input
               type="password"
-              className={`form-control ${errors.password ? "is-invalid" : ""}`}
+              className={errors.password ? "error" : ""}
               id="password"
               name="password"
               value={formData.password}
               onChange={handleChange}
-              placeholder="Crea una contraseña segura"
+              placeholder=" "
               required
             />
+            <label htmlFor="password">Contraseña</label>
             {errors.password && (
-              <div className="invalid-feedback">{errors.password}</div>
+              <div className="input-error">{errors.password}</div>
             )}
-            <div className="form-text">
-              La contraseña debe tener al menos 6 caracteres.
-            </div>
+            <div className="input-hint">Mínimo 6 caracteres</div>
           </div>
 
-          <div className="mb-3">
-            <label htmlFor="confirmPassword" className="form-label">
-              <i className="bi bi-lock-fill me-2"></i>
-              Confirmar Contraseña
-            </label>
+          <div className="input-group">
+            <i className="bi bi-shield-lock-fill input-icon"></i>
             <input
               type="password"
-              className={`form-control ${errors.confirmPassword ? "is-invalid" : ""}`}
+              className={errors.confirmPassword ? "error" : ""}
               id="confirmPassword"
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}
-              placeholder="Repite tu contraseña"
+              placeholder=" "
               required
             />
+            <label htmlFor="confirmPassword">Confirmar Contraseña</label>
             {errors.confirmPassword && (
-              <div className="invalid-feedback">{errors.confirmPassword}</div>
+              <div className="input-error">{errors.confirmPassword}</div>
             )}
           </div>
 
-          <div className="mb-4">
-            <label htmlFor="role" className="form-label">
-              <i className="bi bi-person-badge-fill me-2"></i>
-              Tipo de Cuenta
-            </label>
+          <div className="input-group">
+            <i className="bi bi-person-badge-fill input-icon"></i>
             <select
-              className="form-select"
               id="role"
               name="role"
               value={formData.role}
@@ -180,33 +207,32 @@ const RegisterPage = () => {
               <option value="moderator">Moderador</option>
               <option value="admin">Administrador</option>
             </select>
-            <div className="form-text">
-              * Solo usuarios autorizados pueden crear cuentas de moderador o administrador
-            </div>
+            <label htmlFor="role">Tipo de Cuenta</label>
+            <div className="input-hint">* Solo usuarios autorizados pueden crear cuentas de moderador o administrador</div>
           </div>
 
           <button 
-            className="btn btn-primary w-100 py-2 mb-3" 
+            className="submit-btn" 
             type="submit"
             disabled={isSubmitting}
           >
             {isSubmitting ? (
               <>
-                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                <span className="spinner"></span>
                 Registrando...
               </>
             ) : (
               <>
-                <i className="bi bi-person-plus me-2"></i>
+                <i className="bi bi-person-plus-fill"></i>
                 Registrarse
               </>
             )}
           </button>
 
-          <div className="text-center mt-4">
-            <p className="text-muted mb-0">¿Ya tienes una cuenta?</p>
-            <Link to="/" className="btn btn-outline-primary mt-2">
-              <i className="bi bi-box-arrow-in-right me-1"></i>
+          <div className="login-link">
+            <span>¿Ya tienes una cuenta?</span>
+            <Link to="/">
+              <i className="bi bi-box-arrow-in-right"></i>
               Iniciar Sesión
             </Link>
           </div>

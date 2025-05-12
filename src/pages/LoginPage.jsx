@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
-import './LoginPage.css'; // Archivo CSS adicional para personalización
+import './LoginPage.css';
 
 const LoginPage = () => {
   const [username, setUsername] = useState('');
@@ -9,6 +9,19 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  
+  // Asegurar que ocupe toda la pantalla
+  React.useEffect(() => {
+    document.body.style.margin = '0';
+    document.body.style.padding = '0';
+    document.body.style.overflow = 'hidden';
+    
+    return () => {
+      document.body.style.margin = '';
+      document.body.style.padding = '';
+      document.body.style.overflow = '';
+    };
+  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -21,12 +34,10 @@ const LoginPage = () => {
         password
       });
 
-      // Guardar el token, nombre de usuario y rol en el localStorage
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('username', res.data.username);
       localStorage.setItem('role', res.data.role);
 
-      // Redirección basada en el rol
       const role = res.data.role;
       if (role === 'admin') {
         navigate('/admin/dashboard');
@@ -42,95 +53,113 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="login-container">
-      <div className="login-card shadow-lg">
-        <div className="login-header text-center mb-4">
-          <h2 className="fw-bold mt-3">Iniciar Sesión</h2>
-          <p className="text-muted">Ingresa tus credenciales para acceder al sistema</p>
+    <div className="barca-login-container">
+      <div className="barca-navbar">
+        <div className="barca-navbar-title">Sistema de Gestión</div>
+        <div className="barca-navbar-actions">
+          <Link to="/login" className="barca-navbar-button">Iniciar Sesión</Link>
+          <Link to="/register" className="barca-navbar-button">Registrarse</Link>
+        </div>
+      </div>
+      <div className="barca-login-card">
+        <div className="barca-login-header">
+          <div className="barca-stripes">
+            <div className="barca-stripe blue"></div>
+            <div className="barca-stripe red"></div>
+            <div className="barca-stripe blue"></div>
+            <div className="barca-stripe red"></div>
+          </div>
+          <div className="barca-logo-container">
+            <div className="barca-logo-circle">
+              <span className="barca-logo-text">FCB</span>
+            </div>
+          </div>
         </div>
 
-        {error && (
-          <div className="alert alert-danger alert-dismissible fade show" role="alert">
-            <i className="bi bi-exclamation-triangle-fill me-2"></i>
-            {error}
+        <div className="barca-login-body">
+          <h2 className="barca-login-title">Portal Culé</h2>
+          <p className="barca-login-subtitle">Més que un club - Ingresa tus credenciales</p>
+
+          {error && (
+            <div className="barca-alert">
+              <i className="bi bi-exclamation-triangle-fill"></i>
+              <span>{error}</span>
+              <button onClick={() => setError('')}>&times;</button>
+            </div>
+          )}
+
+          <form onSubmit={handleLogin} className="barca-login-form">
+            <div className="barca-input-group">
+              <label htmlFor="username">
+                <i className="bi bi-person-fill"></i>
+                Usuario
+              </label>
+              <div className="barca-input-field">
+                <input
+                  id="username"
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="nombre.usuario"
+                  required
+                />
+                <div className="barca-input-underline"></div>
+              </div>
+            </div>
+
+            <div className="barca-input-group">
+              <label htmlFor="password">
+                <i className="bi bi-lock-fill"></i>
+                Contraseña
+              </label>
+              <div className="barca-input-field">
+                <input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                />
+                <div className="barca-input-underline"></div>
+              </div>
+            </div>
+
             <button 
-              type="button" 
-              className="btn-close" 
-              onClick={() => setError('')}
-              aria-label="Close"
-            ></button>
-          </div>
-        )}
+              className="barca-login-button"
+              type="submit"
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <span className="barca-spinner"></span>
+                  Verificando...
+                </>
+              ) : (
+                <>
+                  <i className="bi bi-box-arrow-in-right"></i>
+                  Entrar al Camp Nou
+                </>
+              )}
+            </button>
 
-        <form onSubmit={handleLogin}>
-          <div className="mb-3">
-            <label htmlFor="username" className="form-label">
-              <i className="bi bi-person-fill me-2"></i>
-              Nombre de Usuario
-            </label>
-            <div className="input-group">
-              <span className="input-group-text">
-                <i className="bi bi-person"></i>
-              </span>
-              <input
-                id="username"
-                type="text"
-                className="form-control"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Ingresa tu usuario"
-                required
-              />
+            <div className="barca-forgot-password">
+              <a href="/recovery">¿Olvidaste tu contraseña?</a>
             </div>
-          </div>
 
-          <div className="mb-4">
-            <label htmlFor="password" className="form-label">
-              <i className="bi bi-key-fill me-2"></i>
-              Contraseña
-            </label>
-            <div className="input-group">
-              <span className="input-group-text">
-                <i className="bi bi-lock"></i>
-              </span>
-              <input
-                id="password"
-                type="password"
-                className="form-control"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Ingresa tu contraseña"
-                required
-              />
+            <div className="barca-login-footer">
+              <p>¿Primera vez en la plataforma culé?</p>
+              <Link to="/register" className="barca-register-link">
+                <i className="bi bi-person-plus"></i>
+                Únete al equipo
+              </Link>
             </div>
-          </div>
-
-          <button 
-            className="btn btn-primary w-100 py-2 mb-3" 
-            type="submit"
-            disabled={loading}
-          >
-            {loading ? (
-              <>
-                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                Cargando...
-              </>
-            ) : (
-              <>
-                <i className="bi bi-box-arrow-in-right me-2"></i>
-                Iniciar Sesión
-              </>
-            )}
-          </button>
-
-          <div className="text-center mt-4">
-            <p className="text-muted mb-0">¿No tienes una cuenta?</p>
-            <Link to="/register" className="btn btn-outline-primary mt-2">
-              <i className="bi bi-person-plus me-1"></i>
-              Regístrate aquí
-            </Link>
-          </div>
-        </form>
+          </form>
+        </div>
+        
+        <div className="barca-login-footer-banner">
+          <div className="barca-footer-stripe"></div>
+        </div>
       </div>
     </div>
   );

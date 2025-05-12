@@ -1,7 +1,6 @@
-// src/pages/AdminDashboard.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import './AdminDashboard.css'; // Archivo CSS para personalización
+import './AdminDashboard.css';
 
 const AdminDashboard = () => {
   const [data, setData] = useState(null);
@@ -26,7 +25,7 @@ const AdminDashboard = () => {
     fetchData();
   }, []);
 
-  // Datos de ejemplo (simulados para el diseño)
+  // Datos de ejemplo
   const sampleData = {
     totalUsers: 1243,
     activeToday: 842,
@@ -40,124 +39,116 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="admin-dashboard container-fluid py-4">
-      {/* Encabezado */}
-      <div className="row mb-4">
-        <div className="col">
-          <div className="d-flex align-items-center">
-            <i className="bi bi-shield-lock fs-1 text-danger me-3"></i>
-            <div>
-              <h1 className="fw-bold mb-0">Panel de Administración</h1>
-              <p className="text-muted">Control total del sistema y usuarios</p>
+    <div className="admin-dashboard container-fluid px-4">
+      {/* Nuevo encabezado con estilo Barça */}
+      <div className="dashboard-header">
+        <div className="row align-items-center">
+          <div className="col-md-8">
+            <div className="d-flex align-items-center">
+              <div className="me-3">
+                <div style={{
+                  width: '50px',
+                  height: '50px',
+                  backgroundColor: 'white',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
+                }}>
+                  <span style={{
+                    color: '#A50044',
+                    fontSize: '1.5rem',
+                    fontWeight: 'bold'
+                  }}>FCB</span>
+                </div>
+              </div>
+              <div>
+                <h1 className="mb-1">Panel de Control</h1>
+                <p className="subtitle mb-0">Administración del sistema</p>
+              </div>
             </div>
           </div>
-          <hr className="mt-3 border-danger opacity-25" />
+          <div className="col-md-4 text-md-end mt-3 mt-md-0">
+            <button className="btn btn-light me-2">
+              <i className="bi bi-bell-fill text-danger"></i>
+            </button>
+            <button className="btn btn-light">
+              <i className="bi bi-person-circle text-primary"></i>
+            </button>
+          </div>
         </div>
       </div>
 
       {loading ? (
-        <div className="text-center py-5">
-          <div className="spinner-border text-danger" role="status" style={{width: '3rem', height: '3rem'}}>
-            <span className="visually-hidden">Cargando...</span>
-          </div>
-          <p className="mt-3 fs-5">Cargando datos administrativos...</p>
+        <div className="text-center py-5 my-5">
+          <div className="spinner-barca" style={{width: '3rem', height: '3rem'}}></div>
+          <p className="mt-3 fs-5 text-muted">Cargando datos administrativos...</p>
         </div>
       ) : error ? (
-        <div className="alert alert-danger">
+        <div className="alert alert-danger rounded-lg">
           <i className="bi bi-exclamation-octagon-fill me-2"></i>
           {error}
         </div>
       ) : (
         <>
-          {/* Estadísticas Principales */}
-          <div className="row mb-4">
-            <div className="col-md-3 mb-3">
-              <div className="card stat-card bg-danger bg-opacity-10 border-danger">
-                <div className="card-body">
-                  <div className="d-flex justify-content-between align-items-center">
-                    <div>
-                      <h6 className="card-subtitle text-danger">Usuarios Totales</h6>
-                      <h2 className="card-title mb-0">{data?.totalUsers || sampleData.totalUsers}</h2>
-                      <small className="text-muted">+12% este mes</small>
+          {/* Estadísticas Principales - Rediseñadas */}
+          <div className="row g-4 mb-4">
+            {[
+              { title: "Usuarios Totales", value: data?.totalUsers || sampleData.totalUsers, 
+                change: "+12%", icon: "bi-people-fill", color: "text-primary" },
+              { title: "Activos Hoy", value: data?.activeToday || sampleData.activeToday, 
+                change: "+8%", icon: "bi-activity", color: "text-success" },
+              { title: "Nuevos Registros", value: data?.newRegistrations || sampleData.newRegistrations, 
+                change: "+3", icon: "bi-person-plus", color: "text-info" },
+              { title: "Administradores", value: data?.adminCount || sampleData.adminCount, 
+                change: "Acceso completo", icon: "bi-shield-check", color: "text-warning" }
+            ].map((stat, index) => (
+              <div className="col-md-6 col-lg-3" key={index}>
+                <div className="stat-card card-hover-effect h-100">
+                  <div className="card-body">
+                    <div className="d-flex justify-content-between">
+                      <div>
+                        <h6 className="text-muted mb-2">{stat.title}</h6>
+                        <h2 className="mb-0">{stat.value}</h2>
+                        <small className={`${stat.color} fw-semibold`}>{stat.change}</small>
+                      </div>
+                      <div className="icon-container">
+                        <i className={`bi ${stat.icon} fs-4 ${stat.color}`}></i>
+                      </div>
                     </div>
-                    <i className="bi bi-people-fill fs-1 text-danger opacity-25"></i>
                   </div>
                 </div>
               </div>
-            </div>
-
-            <div className="col-md-3 mb-3">
-              <div className="card stat-card bg-success bg-opacity-10 border-success">
-                <div className="card-body">
-                  <div className="d-flex justify-content-between align-items-center">
-                    <div>
-                      <h6 className="card-subtitle text-success">Activos Hoy</h6>
-                      <h2 className="card-title mb-0">{data?.activeToday || sampleData.activeToday}</h2>
-                      <small className="text-muted">+8% desde ayer</small>
-                    </div>
-                    <i className="bi bi-activity fs-1 text-success opacity-25"></i>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="col-md-3 mb-3">
-              <div className="card stat-card bg-primary bg-opacity-10 border-primary">
-                <div className="card-body">
-                  <div className="d-flex justify-content-between align-items-center">
-                    <div>
-                      <h6 className="card-subtitle text-primary">Nuevos Registros</h6>
-                      <h2 className="card-title mb-0">{data?.newRegistrations || sampleData.newRegistrations}</h2>
-                      <small className="text-muted">+3 en la última hora</small>
-                    </div>
-                    <i className="bi bi-person-plus fs-1 text-primary opacity-25"></i>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="col-md-3 mb-3">
-              <div className="card stat-card bg-warning bg-opacity-10 border-warning">
-                <div className="card-body">
-                  <div className="d-flex justify-content-between align-items-center">
-                    <div>
-                      <h6 className="card-subtitle text-warning">Administradores</h6>
-                      <h2 className="card-title mb-0">{data?.adminCount || sampleData.adminCount}</h2>
-                      <small className="text-muted">Acceso completo</small>
-                    </div>
-                    <i className="bi bi-shield-check fs-1 text-warning opacity-25"></i>
-                  </div>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
 
-          {/* Contenido Principal */}
-          <div className="row">
+          {/* Contenido Principal - Dos columnas */}
+          <div className="row g-4">
             {/* Tabla de Actividad Reciente */}
-            <div className="col-lg-8 mb-4">
-              <div className="card shadow-sm h-100">
-                <div className="card-header bg-white border-0">
-                  <div className="d-flex justify-content-between align-items-center">
-                    <h5 className="mb-0">
-                      <i className="bi bi-list-check text-danger me-2"></i>
-                      Actividad Reciente
-                    </h5>
-                    <button className="btn btn-sm btn-outline-danger">
-                      <i className="bi bi-arrow-clockwise"></i> Actualizar
+            <div className="col-lg-8">
+              <div className="card card-hover-effect h-100">
+                <div className="card-header bg-white border-0 d-flex justify-content-between align-items-center">
+                  <h5 className="mb-0 fw-bold">
+                    <i className="bi bi-list-check me-2 text-danger"></i>
+                    Actividad Reciente
+                  </h5>
+                  <div>
+                    <button className="btn btn-barca-outline btn-sm">
+                      <i className="bi bi-arrow-clockwise me-1"></i> Actualizar
                     </button>
                   </div>
                 </div>
-                <div className="card-body">
+                <div className="card-body p-0">
                   <div className="table-responsive">
-                    <table className="table table-hover align-middle">
-                      <thead className="table-light">
+                    <table className="table barca-table mb-0">
+                      <thead>
                         <tr>
                           <th>Usuario</th>
                           <th>Rol</th>
                           <th>Acción</th>
                           <th>Fecha/Hora</th>
-                          <th>Acciones</th>
+                          <th></th>
                         </tr>
                       </thead>
                       <tbody>
@@ -165,25 +156,25 @@ const AdminDashboard = () => {
                           <tr key={index}>
                             <td>
                               <div className="d-flex align-items-center">
-                                <span className="avatar-sm bg-secondary bg-opacity-10 text-secondary rounded-circle me-2">
+                                <div className="avatar-sm bg-light rounded-circle me-2 d-flex align-items-center justify-content-center">
                                   {activity.username.charAt(0).toUpperCase()}
-                                </span>
-                                {activity.username}
+                                </div>
+                                <span className="fw-semibold">{activity.username}</span>
                               </div>
                             </td>
                             <td>
-                              <span className={`badge bg-${
-                                activity.role === 'admin' ? 'danger' : 
-                                activity.role === 'moderador' ? 'warning' : 'primary'
+                              <span className={`badge badge-barca ${
+                                activity.role === 'admin' ? 'badge-admin' : 
+                                activity.role === 'moderador' ? 'badge-moderador' : 'badge-usuario'
                               }`}>
                                 {activity.role}
                               </span>
                             </td>
                             <td>{activity.action}</td>
                             <td>{new Date(activity.timestamp).toLocaleString()}</td>
-                            <td>
-                              <button className="btn btn-sm btn-outline-secondary">
-                                <i className="bi bi-search"></i>
+                            <td className="text-end">
+                              <button className="btn btn-sm btn-light">
+                                <i className="bi bi-three-dots"></i>
                               </button>
                             </td>
                           </tr>
@@ -196,35 +187,46 @@ const AdminDashboard = () => {
             </div>
 
             {/* Acciones Rápidas */}
-            <div className="col-lg-4 mb-4">
-              <div className="card shadow-sm h-100">
+            <div className="col-lg-4">
+              <div className="card card-hover-effect h-100">
                 <div className="card-header bg-white border-0">
-                  <h5 className="mb-0">
-                    <i className="bi bi-lightning-charge-fill text-danger me-2"></i>
-                    Acciones Administrativas
+                  <h5 className="mb-0 fw-bold">
+                    <i className="bi bi-lightning-charge-fill me-2 text-warning"></i>
+                    Acciones Rápidas
                   </h5>
                 </div>
                 <div className="card-body">
                   <div className="d-grid gap-3">
-                    <button className="btn btn-danger text-start py-3">
-                      <i className="bi bi-person-plus-fill me-2"></i>
-                      Crear Nuevo Usuario
+                    <button className="btn btn-barca text-start py-3 d-flex align-items-center">
+                      <i className="bi bi-person-plus-fill me-3 fs-5"></i>
+                      <div>
+                        <div className="fw-bold">Crear Usuario</div>
+                        <small className="opacity-75">Nuevo registro</small>
+                      </div>
                     </button>
-                    <button className="btn btn-outline-danger text-start py-3">
-                      <i className="bi bi-gear-fill me-2"></i>
-                      Configuración del Sistema
+                    
+                    <button className="btn btn-barca-outline text-start py-3 d-flex align-items-center">
+                      <i className="bi bi-gear-fill me-3 fs-5"></i>
+                      <div>
+                        <div className="fw-bold">Configuración</div>
+                        <small className="opacity-75">Ajustes del sistema</small>
+                      </div>
                     </button>
-                    <button className="btn btn-outline-danger text-start py-3">
-                      <i className="bi bi-shield-lock me-2"></i>
-                      Administrar Permisos
+                    
+                    <button className="btn btn-barca-outline text-start py-3 d-flex align-items-center">
+                      <i className="bi bi-shield-lock me-3 fs-5"></i>
+                      <div>
+                        <div className="fw-bold">Permisos</div>
+                        <small className="opacity-75">Gestión de accesos</small>
+                      </div>
                     </button>
-                    <button className="btn btn-outline-danger text-start py-3">
-                      <i className="bi bi-graph-up me-2"></i>
-                      Generar Reportes
-                    </button>
-                    <button className="btn btn-outline-danger text-start py-3">
-                      <i className="bi bi-database me-2"></i>
-                      Backup del Sistema
+                    
+                    <button className="btn btn-barca-outline text-start py-3 d-flex align-items-center">
+                      <i className="bi bi-graph-up me-3 fs-5"></i>
+                      <div>
+                        <div className="fw-bold">Reportes</div>
+                        <small className="opacity-75">Generar análisis</small>
+                      </div>
                     </button>
                   </div>
                 </div>
@@ -232,70 +234,73 @@ const AdminDashboard = () => {
             </div>
           </div>
 
-          {/* Estadísticas Secundarias */}
-          <div className="row mt-3">
-            <div className="col-md-6 mb-4">
-              <div className="card shadow-sm h-100">
+          {/* Gráficos y Alertas */}
+          <div className="row g-4 mt-3">
+            <div className="col-md-6">
+              <div className="card card-hover-effect h-100">
                 <div className="card-header bg-white border-0">
-                  <h5 className="mb-0">
-                    <i className="bi bi-pie-chart-fill text-danger me-2"></i>
+                  <h5 className="mb-0 fw-bold">
+                    <i className="bi bi-pie-chart-fill me-2 text-primary"></i>
                     Distribución de Usuarios
                   </h5>
                 </div>
                 <div className="card-body">
-                  <div className="d-flex justify-content-center">
-                    <div className="chart-placeholder bg-light rounded-circle d-flex align-items-center justify-content-center" style={{width: '200px', height: '200px'}}>
-                      <span className="text-muted">Gráfico de distribución</span>
+                  <div className="chart-placeholder-barca">
+                    <div className="text-center">
+                      <div className="spinner-border text-light mb-2" role="status"></div>
+                      <p className="mb-0">Cargando gráfico...</p>
                     </div>
                   </div>
                   <div className="row mt-4 text-center">
                     <div className="col-4">
-                      <h5 className="text-danger">72%</h5>
+                      <div className="h4 text-primary">72%</div>
                       <small className="text-muted">Usuarios</small>
                     </div>
                     <div className="col-4">
-                      <h5 className="text-warning">18%</h5>
+                      <div className="h4 text-warning">18%</div>
                       <small className="text-muted">Moderadores</small>
                     </div>
                     <div className="col-4">
-                      <h5 className="text-primary">10%</h5>
+                      <div className="h4 text-danger">10%</div>
                       <small className="text-muted">Administradores</small>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-
-            <div className="col-md-6 mb-4">
-              <div className="card shadow-sm h-100">
+            
+            <div className="col-md-6">
+              <div className="card card-hover-effect h-100">
                 <div className="card-header bg-white border-0">
-                  <h5 className="mb-0">
-                    <i className="bi bi-exclamation-triangle-fill text-danger me-2"></i>
+                  <h5 className="mb-0 fw-bold">
+                    <i className="bi bi-exclamation-triangle-fill me-2 text-warning"></i>
                     Alertas del Sistema
                   </h5>
                 </div>
                 <div className="card-body">
-                  <div className="alert alert-warning">
-                    <div className="d-flex align-items-center">
-                      <i className="bi bi-exclamation-triangle-fill me-2 fs-4"></i>
+                  <div className="alert alert-barca alert-warning mb-3">
+                    <div className="d-flex">
+                      <i className="bi bi-exclamation-triangle-fill me-3 fs-4"></i>
                       <div>
                         <h6 className="alert-heading mb-1">Espacio en disco</h6>
                         <p className="mb-0 small">El 85% del almacenamiento está en uso</p>
                       </div>
                     </div>
                   </div>
-                  <div className="alert alert-danger">
-                    <div className="d-flex align-items-center">
-                      <i className="bi bi-shield-exclamation me-2 fs-4"></i>
+                  
+                  <div className="alert alert-barca alert-danger mb-3">
+                    <div className="d-flex">
+                      <i className="bi bi-shield-exclamation me-3 fs-4"></i>
                       <div>
                         <h6 className="alert-heading mb-1">Seguridad</h6>
                         <p className="mb-0 small">3 intentos de acceso no autorizado</p>
                       </div>
                     </div>
                   </div>
-                  <div className="alert alert-info">
-                    <div className="d-flex align-items-center">
-                      <i className="bi bi-arrow-up-circle-fill me-2 fs-4"></i>
+                  
+                  <div className="alert alert-barca alert-info">
+                    <div className="d-flex">
+                      <i className="bi bi-arrow-up-circle-fill me-3 fs-4"></i>
                       <div>
                         <h6 className="alert-heading mb-1">Actualización</h6>
                         <p className="mb-0 small">Nueva versión disponible (v2.3.1)</p>

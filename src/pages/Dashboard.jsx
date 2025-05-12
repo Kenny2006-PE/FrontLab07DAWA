@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Dashboard.css'; // Archivo CSS adicional para personalización
+import './Dashboard.css';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -18,7 +18,6 @@ const Dashboard = () => {
     } else {
       setUsername(user);
       setRole(userRole);
-      // Simulando carga de datos
       setTimeout(() => setLoading(false), 1000);
     }
   }, [navigate]);
@@ -26,29 +25,30 @@ const Dashboard = () => {
   if (loading) {
     return (
       <div className="dashboard-loading text-center py-5">
-        <div className="spinner-border text-primary" style={{width: '3rem', height: '3rem'}} role="status">
+        <div className="spinner-border" role="status">
           <span className="visually-hidden">Cargando...</span>
         </div>
-        <h4 className="mt-3">Cargando tu dashboard...</h4>
+        <h4 className="mt-4">Preparando tu experiencia culé...</h4>
       </div>
     );
   }
 
   return (
     <div className="dashboard-container container-fluid py-4">
+      {/* Header con tarjeta de bienvenida */}
       <div className="row mb-4">
         <div className="col">
-          <div className="welcome-card bg-primary text-white p-4 rounded-3 shadow">
+          <div className="welcome-card p-4">
             <div className="d-flex justify-content-between align-items-center">
               <div>
-                <h1 className="fw-bold mb-1">Bienvenido, {username}!</h1>
-                <p className="mb-0 opacity-75">
-                  <i className="bi bi-person-badge me-1"></i>
+                <h1 className="fw-bold mb-2 text-white">¡Hola, {username}!</h1>
+                <div className="badge bg-white text-primary px-3 py-2 rounded-pill">
+                  <i className="bi bi-shield-lock me-2"></i>
                   {role === 'admin' ? 'Administrador' : 
                    role === 'moderador' ? 'Moderador' : 'Usuario'}
-                </p>
+                </div>
               </div>
-              <div className="avatar-lg bg-white text-primary rounded-circle d-flex align-items-center justify-content-center">
+              <div className="avatar-lg rounded-circle d-flex align-items-center justify-content-center">
                 {username.charAt(0).toUpperCase()}
               </div>
             </div>
@@ -56,123 +56,93 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="row">
+      <div className="row g-4">
         {/* Tarjeta de Acciones Rápidas */}
-        <div className="col-lg-6 mb-4">
-          <div className="card shadow-sm h-100">
-            <div className="card-header bg-white border-0">
-              <h5 className="mb-0">
-                <i className="bi bi-lightning-charge-fill text-warning me-2"></i>
+        <div className="col-lg-6">
+          <div className="card h-100">
+            <div className="card-header">
+              <h5 className="mb-0 d-flex align-items-center">
+                <i className="bi bi-lightning-charge-fill me-2" style={{background: 'var(--barca-gradient)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}}></i>
                 Acciones Rápidas
               </h5>
             </div>
             <div className="card-body">
               <div className="row g-3">
-                <div className="col-md-6">
-                  <button className="btn btn-action-card w-100 h-100 py-3">
-                    <i className="bi bi-calendar-check fs-2 mb-2"></i>
-                    <h6>Mis Eventos</h6>
-                  </button>
-                </div>
-                <div className="col-md-6">
-                  <button className="btn btn-action-card w-100 h-100 py-3">
-                    <i className="bi bi-file-earmark-text fs-2 mb-2"></i>
-                    <h6>Documentos</h6>
-                  </button>
-                </div>
-                <div className="col-md-6">
-                  <button className="btn btn-action-card w-100 h-100 py-3">
-                    <i className="bi bi-people fs-2 mb-2"></i>
-                    <h6>Contactos</h6>
-                  </button>
-                </div>
-                <div className="col-md-6">
-                  <button className="btn btn-action-card w-100 h-100 py-3">
-                    <i className="bi bi-gear fs-2 mb-2"></i>
-                    <h6>Configuración</h6>
-                  </button>
-                </div>
+                {[
+                  {icon: 'bi-calendar-check', title: 'Mis Eventos', color: 'primary'},
+                  {icon: 'bi-file-earmark-text', title: 'Documentos', color: 'success'},
+                  {icon: 'bi-people', title: 'Contactos', color: 'warning'},
+                  {icon: 'bi-gear', title: 'Configuración', color: 'info'}
+                ].map((action, index) => (
+                  <div className="col-md-6" key={index}>
+                    <button className="btn btn-action-card w-100">
+                      <i className={`bi ${action.icon} fs-1`}></i>
+                      <h6 className={`text-${action.color} fw-bold mt-2`}>{action.title}</h6>
+                    </button>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         </div>
 
         {/* Tarjeta de Actividad Reciente */}
-        <div className="col-lg-6 mb-4">
-          <div className="card shadow-sm h-100">
-            <div className="card-header bg-white border-0">
-              <h5 className="mb-0">
-                <i className="bi bi-clock-history text-info me-2"></i>
+        <div className="col-lg-6">
+          <div className="card h-100">
+            <div className="card-header">
+              <h5 className="mb-0 d-flex align-items-center">
+                <i className="bi bi-clock-history me-2" style={{background: 'var(--barca-gradient)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}}></i>
                 Actividad Reciente
               </h5>
             </div>
             <div className="card-body">
               <div className="activity-timeline">
-                <div className="activity-item">
-                  <div className="activity-badge bg-success"></div>
-                  <div className="activity-content">
-                    <small className="text-muted">Hace 15 minutos</small>
-                    <p className="mb-0">Has iniciado sesión correctamente</p>
+                {[
+                  {time: 'Hace 15 minutos', text: 'Has iniciado sesión correctamente', color: 'success'},
+                  {time: 'Ayer, 14:32', text: 'Actualizaste tu información de perfil', color: 'primary'},
+                  {time: 'Lunes, 09:15', text: 'Subiste un nuevo documento', color: 'warning'},
+                  {time: '28 Feb, 2024', text: 'Registro completado', color: 'info'}
+                ].map((activity, index) => (
+                  <div className="activity-item" key={index}>
+                    <div className={`activity-badge bg-${activity.color}`}></div>
+                    <div className="activity-content">
+                      <small className="text-muted">{activity.time}</small>
+                      <p className="mb-0 fw-medium">{activity.text}</p>
+                    </div>
                   </div>
-                </div>
-                <div className="activity-item">
-                  <div className="activity-badge bg-primary"></div>
-                  <div className="activity-content">
-                    <small className="text-muted">Ayer, 14:32</small>
-                    <p className="mb-0">Actualizaste tu información de perfil</p>
-                  </div>
-                </div>
-                <div className="activity-item">
-                  <div className="activity-badge bg-warning"></div>
-                  <div className="activity-content">
-                    <small className="text-muted">Lunes, 09:15</small>
-                    <p className="mb-0">Subiste un nuevo documento</p>
-                  </div>
-                </div>
-                <div className="activity-item">
-                  <div className="activity-badge bg-info"></div>
-                  <div className="activity-content">
-                    <small className="text-muted">28 Feb, 2024</small>
-                    <p className="mb-0">Registro completado</p>
-                  </div>
-                </div>
+                ))}
               </div>
-              <button className="btn btn-outline-secondary mt-3">
-                Ver toda la actividad
+              <button className="btn btn-outline-secondary mt-3 w-100">
+                Ver toda la actividad <i className="bi bi-arrow-right ms-2"></i>
               </button>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Sección de Estadísticas (ejemplo) */}
-      <div className="row mt-2">
-        <div className="col">
-          <div className="card shadow-sm">
-            <div className="card-header bg-white border-0">
-              <h5 className="mb-0">
-                <i className="bi bi-bar-chart-line-fill text-success me-2"></i>
+        {/* Sección de Estadísticas */}
+        <div className="col-12">
+          <div className="stats-card">
+            <div className="card-header">
+              <h5 className="mb-0 d-flex align-items-center">
+                <i className="bi bi-bar-chart-line me-2"></i>
                 Tus Estadísticas
               </h5>
             </div>
             <div className="card-body">
-              <div className="row text-center">
-                <div className="col-md-3 mb-3 mb-md-0">
-                  <h3 className="text-primary">12</h3>
-                  <p className="text-muted mb-0">Eventos</p>
-                </div>
-                <div className="col-md-3 mb-3 mb-md-0">
-                  <h3 className="text-success">5</h3>
-                  <p className="text-muted mb-0">Tareas completadas</p>
-                </div>
-                <div className="col-md-3 mb-3 mb-md-0">
-                  <h3 className="text-warning">3</h3>
-                  <p className="text-muted mb-0">Mensajes nuevos</p>
-                </div>
-                <div className="col-md-3">
-                  <h3 className="text-info">8</h3>
-                  <p className="text-muted mb-0">Documentos</p>
-                </div>
+              <div className="row">
+                {[
+                  {value: 12, label: 'Eventos', color: 'primary'},
+                  {value: 5, label: 'Tareas completadas', color: 'success'},
+                  {value: 3, label: 'Mensajes nuevos', color: 'warning'},
+                  {value: 8, label: 'Documentos', color: 'info'}
+                ].map((stat, index) => (
+                  <div className="col-md-3 col-6" key={index}>
+                    <div className="stat-item">
+                      <h3 className={`text-${stat.color}`}>{stat.value}</h3>
+                      <p className="text-muted mb-0">{stat.label}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
